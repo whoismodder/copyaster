@@ -18,6 +18,15 @@
 
 ---
 
+<p align="center">
+  <a href="https://github.com/whoismodder/copyaster/releases/download/v0.1.0/showcase.mp4">
+    <img src="assets/preview.gif" width="800" alt="Copyaster demo">
+  </a>
+</p>
+<p align="center"><sub>Click para ver el video completo</sub></p>
+
+---
+
 ## Install
 
 ```bash
