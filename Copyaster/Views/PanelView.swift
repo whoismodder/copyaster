@@ -142,7 +142,7 @@ struct PanelView: View {
                         onDelete: { withAnimation { state.deleteRecent(item) } },
                         onCopy: { onPaste?(item) }
                     )
-                    .id(i)
+                    .id("recent-\(item.id)")
                 }
             }
         }
@@ -163,7 +163,7 @@ struct PanelView: View {
                         onCopy: { onPaste?(item) },
                         onUpdateTitle: { t in state.updateTitle(for: item.id, title: t ?? "") }
                     )
-                    .id(i) // Enteros consistentes
+                    .id("saved-\(item.id)")
                 }
             }
         }
