@@ -1,0 +1,35 @@
+name: Copyaster
+options:
+  bundleIdPrefix: com.copyaster
+  deploymentTarget:
+    macOS: "14.0"
+  generateEmptyDirectories: true
+  createIntermediateGroups: true
+
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    MACOSX_DEPLOYMENT_TARGET: "14.0"
+
+targets:
+  Copyaster:
+    type: application
+    platform: macOS
+    sources:
+      - path: Copyaster
+        excludes:
+          - Resources/Assets.xcassets/AppIcon.appiconset
+    resources:
+      - path: Copyaster/Resources/Assets.xcassets
+    settings:
+      base:
+        INFOPLIST_FILE: Copyaster/Resources/Info.plist
+        CODE_SIGN_ENTITLEMENTS: Copyaster/Resources/Copyaster.entitlements
+        PRODUCT_BUNDLE_IDENTIFIER: com.copyaster.app
+        MARKETING_VERSION: "0.1.0"
+        CURRENT_PROJECT_VERSION: 1
+        LD_RUNPATH_SEARCH_PATHS: "@executable_path/../Frameworks"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ENABLE_PREVIEWS: true
+        CODE_SIGN_IDENTITY: "-"
+        CODE_SIGNING_REQUIRED: false
