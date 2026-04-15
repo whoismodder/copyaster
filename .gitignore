@@ -1,0 +1,11 @@
+.DS_Store
+build/
+DerivedData/
+.build/
+*.swp
+.idea/
+xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.dmg
+Copyaster.xcodeproj/
