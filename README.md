@@ -5,90 +5,84 @@
 <h1 align="center">Copyaster</h1>
 
 <p align="center">
-  <strong>Clipboard manager for macOS. Minimal, fast, always there.</strong>
+  <strong>Clipboard manager para macOS. Minimal, rápido, siempre ahí.</strong>
 </p>
 
 <p align="center">
   <a href="https://github.com/whoismodder/copyaster/releases/latest"><img src="https://img.shields.io/github/v/release/whoismodder/copyaster?style=flat-square" alt="Release"></a>
-  <a href="https://github.com/whoismodder/copyaster/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="MIT License"></a>
+  <a href="https://github.com/whoismodder/copyaster/blob/main/LICENSE"><img src="https://img.shields.io/badge/licencia-MIT-blue?style=flat-square" alt="MIT License"></a>
   <img src="https://img.shields.io/badge/macOS-14%2B-black?style=flat-square" alt="macOS 14+">
-  <img src="https://img.shields.io/badge/Swift-native-orange?style=flat-square" alt="Swift">
-  <a href="https://github.com/whoismodder/copyaster/releases/latest"><img src="https://img.shields.io/github/downloads/whoismodder/copyaster/total?style=flat-square&color=green" alt="Downloads"></a>
+  <img src="https://img.shields.io/badge/Swift-nativo-orange?style=flat-square" alt="Swift">
+  <a href="https://github.com/whoismodder/copyaster/releases/latest"><img src="https://img.shields.io/github/downloads/whoismodder/copyaster/total?style=flat-square&color=green" alt="Descargas"></a>
 </p>
 
 ---
 
-<p align="center">
-  <a href="https://github.com/whoismodder/copyaster/releases/download/v0.1.0/showcase.mp4">
-    <img src="assets/preview.gif" width="800" alt="Copyaster demo">
-  </a>
-</p>
-<p align="center"><sub>Click para ver el video completo</sub></p>
-
----
-
-## Install
+## Instalación
 
 ```bash
 brew tap whoismodder/copyaster
 brew install --cask copyaster
 ```
 
-Or [download the DMG](https://github.com/whoismodder/copyaster/releases/latest) → drag to Applications.
+O [descargá el DMG](https://github.com/whoismodder/copyaster/releases/latest) → arrastrá a Aplicaciones.
 
-> If macOS says "damaged": `xattr -cr /Applications/Copyaster.app`
+> Si macOS dice "dañado": `xattr -cr /Applications/Copyaster.app`
 
-## What it does
+## Qué hace
 
-Copyaster lives in your menu bar. Every time you copy something, it saves it. You pick what you need, when you need it.
+Copyaster vive en tu menu bar. Cada vez que copiás algo, lo guarda. Vos elegís qué necesitás, cuando lo necesitás.
 
-**Two layers:**
-- **Recientes** — last 20 clips, auto-managed
-- **Guardados** — persistent clips with emoji + title
+**Dos capas:**
+- **Recientes** — últimos 20 clips, se gestionan solos
+- **Guardados** — clips persistentes con emoji + título
 
 ## Features
 
-- 📋 **Menu bar app** — always one click away
-- ⌨️ **⌘⇧V anywhere** — inline selector in any text field
-- 🏷️ **Save with emoji + title** — organize what matters
-- 🔍 **Search** — find clips instantly
-- 📒 **Apple Notes** — send clips to Notes with one click
-- 👀 **Hover preview** — see your clipboard without clicking
-- 🔒 **Password safe** — never saves passwords or sensitive data
-- ⚙️ **Configurable** — change the hotkey, auto-start at login
-- 🪶 **1.5MB** — native Swift, no Electron, no bloat
+- 📋 **Menu bar** — siempre a un click
+- ⌨️ **⌘⇧V en cualquier lugar** — selector inline en cualquier campo de texto
+- 🏷️ **Guardá con emoji + título** — organizá lo importante
+- 🔍 **Búsqueda** — encontrá clips al instante
+- 📲 **Universal Clipboard** — detecta lo que copiás desde el iPhone
+- 📒 **Apple Notes** — enviá clips a Notas con un click
+- 👀 **Hover preview** — ve tu clipboard sin hacer click
+- 🔒 **Seguro** — nunca guarda passwords ni datos sensibles
+- ⌘ **Multi-select** — seleccioná varios clips con ⌘+click
+- ⚙️ **Configurable** — cambiá el atajo, arranque automático
+- 🪶 **1.5MB** — Swift nativo, sin Electron, sin peso
 
-## Shortcuts
+## Atajos
 
-| Key | Action |
-|-----|--------|
-| Click 📋 | Open panel |
-| Hover 📋 | Preview current clip |
-| ⌘⇧V | Inline selector |
-| ↑↓ | Navigate clips |
-| ⏎ | Copy to clipboard |
-| ⇥ | Switch Recientes / Guardados |
-| Esc | Close |
-| Right click 📋 | Settings / Quit |
+| Tecla | Acción |
+|-------|--------|
+| Click en 📋 | Abrir panel |
+| Hover en 📋 | Preview del clip actual |
+| ⌘⇧V | Selector inline |
+| ↑↓ | Navegar clips |
+| ⏎ | Copiar al clipboard |
+| ⌘+click | Seleccionar varios |
+| ⇥ | Cambiar Recientes / Guardados |
+| Esc | Cerrar |
+| Click derecho 📋 | Ajustes / Salir |
 
-## Build from source
+## Compilar desde el código
 
 ```bash
 git clone https://github.com/whoismodder/copyaster.git
 cd copyaster
-make icons  # generate app icon
-make run    # build and open
+make icons  # generar ícono
+make run    # compilar y abrir
 ```
 
-Requires macOS 14+ and Xcode Command Line Tools (`xcode-select --install`).
+Requiere macOS 14+ y Xcode Command Line Tools (`xcode-select --install`).
 
 ## Stack
 
 - Swift 5.9 + SwiftUI + AppKit
-- Carbon Events for global hotkeys (no accessibility required)
-- JSON file storage (~/.local/share/Copyaster/)
-- Zero dependencies — only system frameworks
+- Carbon Events para hotkeys globales (sin permisos de accesibilidad)
+- Almacenamiento JSON local
+- Cero dependencias — solo frameworks del sistema
 
-## License
+## Licencia
 
-[MIT](LICENSE) — use it however you want.
+[MIT](LICENSE) — usalo como quieras.
