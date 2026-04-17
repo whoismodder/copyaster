@@ -12,6 +12,7 @@ final class AppState {
 
     var selectedTab: Tab = .recents
     var searchText: String = ""
+    var selectedIDs: Set<UUID> = []
 
     enum Tab: String, CaseIterable {
         case recents = "Recientes"
@@ -46,6 +47,9 @@ final class AppState {
         return r + s
     }
 
+    /// Se llama cada vez que cambian los guardados
+    var onSavedChanged: (() -> Void)?
+
     // MARK: - Actions
 
     func addRecent(_ item: ClipboardItem) {
@@ -64,11 +68,13 @@ final class AppState {
         var newItem = item
         newItem.title = title
         saved.insert(newItem, at: 0)
+        onSavedChanged?()
     }
 
     func updateTitle(for id: UUID, title: String) {
         if let i = saved.firstIndex(where: { $0.id == id }) {
             saved[i].title = title.isEmpty ? nil : title
+            onSavedChanged?()
         }
     }
 
@@ -78,9 +84,38 @@ final class AppState {
 
     func deleteSaved(_ item: ClipboardItem) {
         saved.removeAll { $0.id == item.id }
+        onSavedChanged?()
     }
 
     func copyToClipboard(_ item: ClipboardItem) {
         ClipboardMonitor.writeToClipboard(item)
+    }
+
+    // MARK: - Multi-select
+
+    func toggleSelection(_ item: ClipboardItem) {
+        guard case .text = item.content else { return }
+        if selectedIDs.contains(item.id) {
+            selectedIDs.remove(item.id)
+        } else {
+            selectedIDs.insert(item.id)
+        }
+    }
+
+    func clearSelection() {
+        selectedIDs = []
+    }
+
+    func copySelected() {
+        let all = recents + saved
+        let combined = all
+            .filter { selectedIDs.contains($0.id) }
+            .compactMap { $0.content.fullText }
+            .joined(separator: "\n\n")
+        guard !combined.isEmpty else { return }
+        let pb = NSPasteboard.general
+        pb.clearContents()
+        pb.setString(combined, forType: .string)
+        clearSelection()
     }
 }

@@ -10,6 +10,12 @@ struct PanelView: View {
         state.selectedTab == .recents ? state.filteredRecents : state.filteredSaved
     }
 
+    private func scrollID(for index: Int) -> String {
+        guard index < currentItems.count else { return "" }
+        let prefix = state.selectedTab == .recents ? "recent" : "saved"
+        return "\(prefix)-\(currentItems[index].id)"
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             searchBar
@@ -23,6 +29,7 @@ struct PanelView: View {
         .onAppear {
             state.selectedTab = .recents
             state.searchText = ""
+            state.clearSelection()
             selectedIndex = 0
         }
         .onKeyPress(.downArrow) { move(1); return .handled }
@@ -120,7 +127,7 @@ struct PanelView: View {
                 .animation(.easeInOut(duration: 0.2), value: state.selectedTab)
             }
             .onChange(of: selectedIndex) { _, i in
-                withAnimation(.easeOut(duration: 0.1)) { proxy.scrollTo(i, anchor: .center) }
+                withAnimation(.easeOut(duration: 0.1)) { proxy.scrollTo(scrollID(for: i), anchor: .center) }
             }
         }
     }
@@ -138,9 +145,14 @@ struct PanelView: View {
                         isCurrentClip: i == 0 && state.searchText.isEmpty,
                         savedTitle: saved?.title,
                         isKeyboardSelected: i == selectedIndex,
+                        isMultiSelected: state.selectedIDs.contains(item.id),
                         onSave: { t in withAnimation { state.saveItem(item, withTitle: t) } },
                         onDelete: { withAnimation { state.deleteRecent(item) } },
-                        onCopy: { onPaste?(item) }
+                        onCopy: {
+                            state.clearSelection()
+                            onPaste?(item)
+                        },
+                        onMultiSelect: { withAnimation { state.toggleSelection(item) } }
                     )
                     .id("recent-\(item.id)")
                 }
@@ -159,8 +171,13 @@ struct PanelView: View {
                         isSavedTab: true,
                         isCurrentClip: false,
                         isKeyboardSelected: i == selectedIndex,
+                        isMultiSelected: state.selectedIDs.contains(item.id),
                         onDelete: { withAnimation { state.deleteSaved(item) } },
-                        onCopy: { onPaste?(item) },
+                        onCopy: {
+                            state.clearSelection()
+                            onPaste?(item)
+                        },
+                        onMultiSelect: { withAnimation { state.toggleSelection(item) } },
                         onUpdateTitle: { t in state.updateTitle(for: item.id, title: t ?? "") }
                     )
                     .id("saved-\(item.id)")
@@ -186,20 +203,44 @@ struct PanelView: View {
 
     private var footer: some View {
         HStack(spacing: 0) {
-            Text("Copyaster")
-                .font(.caption2.weight(.medium))
-                .foregroundStyle(.quaternary)
-            Spacer()
-            HStack(spacing: 6) {
-                pill("↑↓")
-                pill("⏎ copiar")
-                pill("⇥ tab")
-                pill(HotkeyOption.load().rawValue)
+            if state.selectedIDs.isEmpty {
+                Text("Copyaster")
+                    .font(.caption2.weight(.medium))
+                    .foregroundStyle(.quaternary)
+                Spacer()
+                HStack(spacing: 6) {
+                    pill("↑↓")
+                    pill("⏎ copiar")
+                    pill("⌘ multi")
+                    pill(HotkeyOption.load().rawValue)
+                }
+            } else {
+                Button {
+                    state.copySelected()
+                    NSApp.keyWindow?.close()
+                } label: {
+                    HStack(spacing: 5) {
+                        Image(systemName: "doc.on.doc")
+                        Text("Copiar \(state.selectedIDs.count)")
+                    }
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(.primary)
+                }
+                .buttonStyle(.plain)
+                Spacer()
+                Button {
+                    withAnimation { state.clearSelection() }
+                } label: {
+                    Text("Cancelar")
+                        .font(.caption2)
+                        .foregroundStyle(.tertiary)
+                }
+                .buttonStyle(.plain)
             }
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 7)
-        .accessibilityHidden(true)
+        .animation(.easeInOut(duration: 0.15), value: state.selectedIDs.isEmpty)
     }
 
     private func pill(_ t: String) -> some View {

@@ -47,9 +47,12 @@ final class ClipboardMonitor {
     }
 
     private func retryRemoteClipboard() {
+        let countAtSchedule = lastChangeCount
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
             guard let self else { return }
             let pb = NSPasteboard.general
+            // Solo reintentar si el clipboard no cambió de nuevo (evita duplicados)
+            guard pb.changeCount == countAtSchedule else { return }
             if let item = self.readClipboard(pb) {
                 self.onChange?(item)
             }

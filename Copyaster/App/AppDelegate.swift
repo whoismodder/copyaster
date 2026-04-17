@@ -31,6 +31,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         setupClipboardMonitor()
         setupHotkey()
         loadSavedClips()
+        appState.onSavedChanged = { [weak self] in self?.persistSaved() }
     }
 
     func applicationWillTerminate(_ notification: Notification) {
@@ -221,6 +222,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func showInlineSelector() {
+        // Limpiar monitors anteriores que puedan haber quedado
+        dismissSelector()
+
         guard !appState.allItems.isEmpty else { return }
 
         let mouseLocation = NSEvent.mouseLocation
@@ -260,24 +264,24 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         selectorWindow = window
         selectorSelectedIndex = 0
 
-        let allItems = appState.recents + appState.saved
-
-        // Teclado: flechas + Enter + Escape
+        // Teclado: flechas + Enter + Escape — usa items vivos, no snapshot
         localMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
             guard let self else { return event }
+            let liveItems = self.appState.recents + self.appState.saved
+            guard !liveItems.isEmpty else { return event }
 
             switch Int(event.keyCode) {
             case 125: // Down
-                self.selectorSelectedIndex = min(self.selectorSelectedIndex + 1, allItems.count - 1)
+                self.selectorSelectedIndex = min(self.selectorSelectedIndex + 1, liveItems.count - 1)
                 self.updateSelectorView()
                 return nil
             case 126: // Up
                 self.selectorSelectedIndex = max(self.selectorSelectedIndex - 1, 0)
                 self.updateSelectorView()
                 return nil
-            case 36: // Enter — seleccionar y pegar
-                if self.selectorSelectedIndex < allItems.count {
-                    let item = allItems[self.selectorSelectedIndex]
+            case 36: // Enter
+                if self.selectorSelectedIndex < liveItems.count {
+                    let item = liveItems[self.selectorSelectedIndex]
                     self.dismissSelector()
                     self.pasteItem(item)
                 }

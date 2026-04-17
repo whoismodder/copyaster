@@ -6,10 +6,12 @@ struct ClipRow: View {
     let isCurrentClip: Bool
     var savedTitle: String? = nil
     var isKeyboardSelected: Bool = false
+    var isMultiSelected: Bool = false
 
     var onSave: ((String?) -> Void)? = nil
     var onDelete: (() -> Void)? = nil
     var onCopy: (() -> Void)? = nil
+    var onMultiSelect: (() -> Void)? = nil
     var onUpdateTitle: ((String?) -> Void)? = nil
 
     @State private var isHovered = false
@@ -50,7 +52,13 @@ struct ClipRow: View {
         .background(rowBackground)
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .contentShape(Rectangle())
-        .onTapGesture { onCopy?() }
+        .onTapGesture {
+            if NSApp.currentEvent?.modifierFlags.contains(.command) == true {
+                onMultiSelect?()
+            } else {
+                onCopy?()
+            }
+        }
         .onHover { isHovered = $0 }
         .animation(.easeInOut(duration: Self.animDuration), value: isSaving)
         .animation(.easeInOut(duration: Self.animDuration), value: showSavedFeedback)
@@ -90,6 +98,7 @@ struct ClipRow: View {
     }
 
     private var bgColor: Color {
+        if isMultiSelected { return Color.accentColor.opacity(0.1) }
         if isKeyboardSelected { return Color.primary.opacity(0.08) }
         if isCurrentClip && !isSavedTab { return Color.primary.opacity(0.05) }
         if isHovered { return Color.primary.opacity(0.03) }
@@ -99,7 +108,14 @@ struct ClipRow: View {
     // MARK: - Content
 
     private var contentArea: some View {
-        VStack(alignment: .leading, spacing: 3) {
+        HStack(spacing: 8) {
+            if isMultiSelected {
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.subheadline)
+                    .foregroundStyle(Color.accentColor)
+                    .transition(.scale.combined(with: .opacity))
+            }
+            VStack(alignment: .leading, spacing: 3) {
             if isSavedTab, let title = item.title, !title.isEmpty {
                 Text(title)
                     .font(.caption.weight(.medium))
@@ -111,8 +127,10 @@ struct ClipRow: View {
                     .font(.caption2)
                     .foregroundStyle(.quaternary)
             }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .animation(.easeInOut(duration: 0.15), value: isMultiSelected)
     }
 
     @ViewBuilder
@@ -251,6 +269,8 @@ struct ClipRow: View {
         func esc(_ s: String) -> String {
             s.replacingOccurrences(of: "\\", with: "\\\\")
              .replacingOccurrences(of: "\"", with: "\\\"")
+             .replacingOccurrences(of: "\n", with: "\\n")
+             .replacingOccurrences(of: "\r", with: "\\r")
         }
 
         let script = "tell application \"Notes\" to make new note with properties {name:\"\(esc(noteTitle))\", body:\"\(esc(text))\"}"
