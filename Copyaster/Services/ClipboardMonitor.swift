@@ -1,5 +1,4 @@
 import AppKit
-import Combine
 
 final class ClipboardMonitor {
     private var timer: Timer?
@@ -12,6 +11,8 @@ final class ClipboardMonitor {
         .init("de.petermaurer.TransientPasteboardType"),
         .init("com.agilebits.onepassword"),
     ]
+
+    private static let remoteClipboardType = NSPasteboard.PasteboardType("com.apple.is-remote-clipboard")
 
     var onChange: ((ClipboardItem) -> Void)?
 
@@ -35,18 +36,33 @@ final class ClipboardMonitor {
 
         if let item = readClipboard(pb) {
             onChange?(item)
+        } else if isRemoteClipboard(pb) {
+            // Universal Clipboard: datos no disponibles aún, reintentar
+            retryRemoteClipboard()
+        }
+    }
+
+    private func isRemoteClipboard(_ pb: NSPasteboard) -> Bool {
+        (pb.types ?? []).contains(Self.remoteClipboardType)
+    }
+
+    private func retryRemoteClipboard() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
+            guard let self else { return }
+            let pb = NSPasteboard.general
+            if let item = self.readClipboard(pb) {
+                self.onChange?(item)
+            }
         }
     }
 
     private func readClipboard(_ pb: NSPasteboard) -> ClipboardItem? {
         let types = pb.types ?? []
 
-        // Skip passwords, transient, auto-generated
         for ct in concealedTypes {
             if types.contains(ct) { return nil }
         }
 
-        // Skip empty
         guard !types.isEmpty else { return nil }
 
         // Text
@@ -65,7 +81,6 @@ final class ClipboardMonitor {
         return nil
     }
 
-    /// Write content back to the clipboard
     static func writeToClipboard(_ item: ClipboardItem) {
         let pb = NSPasteboard.general
         pb.clearContents()
