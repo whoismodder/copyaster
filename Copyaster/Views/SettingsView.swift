@@ -104,7 +104,7 @@ struct SettingsView: View {
                         .font(.callout)
                         .foregroundStyle(.secondary)
                         .frame(width: 20)
-                    Text("Últimos 20 clips · auto-eliminación")
+                    Text("Últimos 50 clips · auto-eliminación")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                     Spacer()

@@ -21,7 +21,7 @@ final class AppState {
 
     // MARK: - Config
 
-    let maxRecents = 20
+    let maxRecents = 50
 
     // MARK: - Filtered
 

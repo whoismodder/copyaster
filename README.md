@@ -34,7 +34,7 @@ O [descargá el DMG](https://github.com/whoismodder/copyaster/releases/latest) �
 Copyaster vive en tu menu bar. Cada vez que copiás algo, lo guarda. Vos elegís qué necesitás, cuando lo necesitás.
 
 **Dos capas:**
-- **Recientes** — últimos 20 clips, se gestionan solos
+- **Recientes** — últimos 50 clips, se gestionan solos
 - **Guardados** — clips persistentes con emoji + título
 
 ## Features

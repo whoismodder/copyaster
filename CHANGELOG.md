@@ -4,7 +4,7 @@
 
 ### Agregado
 - Menu bar app con ícono clipboard + "C"
-- Historial de últimos 20 clips (auto-eliminación del más viejo)
+- Historial de últimos 50 clips (auto-eliminación del más viejo)
 - Guardados persistentes con título y emoji
 - Multi-select con ⌘+click para copiar varios clips juntos
 - Hover preview sobre el ícono
